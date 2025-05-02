@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:food_order_app/core/common/colors.dart';
+import 'package:food_order_app/screens/cart/pages/cart_screen.dart';
+import 'package:food_order_app/screens/home/provider/home_provider.dart';
+import 'package:food_order_app/screens/home/widgets/hotel_list_screen.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,6 +19,14 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    var homepro = Provider.of<HomeProvider>(context, listen: false);
+    homepro.fetchhotels(context);
   }
 
   @override
@@ -37,68 +49,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Padding(
-            padding: EdgeInsets.only(top: size.height * 0.02),
-            child: Container(
-              height: size.height * 0.06,
-              width: size.width * 0.90,
-              decoration: BoxDecoration(
-                color: Colors.black26,
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(color: Colors.amber),
-              ),
-              child: TextFormField(
-                decoration: InputDecoration(
-                  hintText: "Search for Hotel",
-                  hintStyle: TextStyle(color: Colors.white),
-                  prefixIcon: Icon(Icons.search, color: Colors.amber),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.only(left: size.width * 0.03),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: size.height * 0.02),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                itemCount: 9,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 10.0,
-                  crossAxisSpacing: 10.0,
-                  childAspectRatio: 0.9,
-                ),
-                itemBuilder: (context, index) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.amber.withOpacity(0.8),
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.orange.withOpacity(0.3),
-                          spreadRadius: 2,
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Burger $index',
-                        style: TextStyle(color: Colors.black87, fontSize: 18),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+      body: _selectedIndex == 0 ? HotelListScreen() : CartScreen(),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
