@@ -4,6 +4,7 @@ import 'package:food_order_app/screens/home/repository/home_repository.dart';
 
 class HomeProvider extends HomeRepository with ChangeNotifier {
   List<HotelListResponse>? hotelList;
+  int selectedIndex = 0;
 
   void fetchhotels(BuildContext context) async {
     hotelList = await fetchhotelAPI(context);
