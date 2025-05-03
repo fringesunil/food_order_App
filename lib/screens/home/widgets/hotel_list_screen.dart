@@ -18,6 +18,14 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       body: Consumer<HomeProvider>(builder: (context, home, child) {
+        final filteredHotels = home.searchQuery.isEmpty
+            ? home.hotelList
+            : home.hotelList
+                ?.where((hotel) => hotel.name!
+                    .toLowerCase()
+                    .contains(home.searchQuery.toLowerCase()))
+                .toList();
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -32,6 +40,13 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                   border: Border.all(color: Colors.amber),
                 ),
                 child: TextFormField(
+                  controller: home.searchController,
+                  onChanged: (value) {
+                    setState(() {
+                      print("QUERY========>${value}");
+                      home.searchQuery = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     hintText: "Search for Hotel",
                     hintStyle: const TextStyle(color: Colors.white),
@@ -46,64 +61,67 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: GridView.builder(
-                  itemCount: home.hotelList!.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10.0,
-                    crossAxisSpacing: 10.0,
-                    childAspectRatio: 0.7, 
-                  ),
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        print(
-                            "HOTEL ID===============>${home.hotelList![index].id}");
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.amber.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(15),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.orange.withOpacity(0.3),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                            ),
-                          ],
+                child: filteredHotels == null || filteredHotels.isEmpty
+                    ? const Center(child: Text("No hotels found"))
+                    : GridView.builder(
+                        itemCount: filteredHotels.length,
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 0.7,
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                  top: Radius.circular(15),
-                                ),
-                                child: Image.network(
-                                  '${home.hotelList![index].image}', // Replace with your image assets
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                ),
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              print(
+                                  "HOTEL ID===============>${filteredHotels[index].id}");
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withOpacity(0.8),
+                                borderRadius: BorderRadius.circular(15),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.orange.withOpacity(0.3),
+                                    spreadRadius: 2,
+                                    blurRadius: 5,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(15),
+                                      ),
+                                      child: Image.network(
+                                        '${filteredHotels[index].image}',
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Text(
+                                      '${filteredHotels[index].name}',
+                                      style: const TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                '${(home.hotelList![index].name)}',
-                                style: const TextStyle(
-                                  color: Colors.black87,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             ),
           ],
