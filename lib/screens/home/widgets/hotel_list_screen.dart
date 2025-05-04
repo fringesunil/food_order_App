@@ -43,7 +43,6 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                   controller: home.searchController,
                   onChanged: (value) {
                     setState(() {
-                      print("QUERY========>${value}");
                       home.searchQuery = value;
                     });
                   },
@@ -77,6 +76,7 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                             onTap: () {
                               print(
                                   "HOTEL ID===============>${filteredHotels[index].id}");
+                              moveTo(context, AppRoutes.menu);
                             },
                             child: Container(
                               decoration: BoxDecoration(
