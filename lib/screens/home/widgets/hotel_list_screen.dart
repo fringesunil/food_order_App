@@ -74,9 +74,12 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              print(
-                                  "HOTEL ID===============>${filteredHotels[index].id}");
-                              moveTo(context, AppRoutes.menu);
+                              setState(() {
+                                print(
+                                    "HOTEL ID===============>${filteredHotels[index].id}");
+                                moveTowitharg(context, AppRoutes.menu,
+                                    filteredHotels[index].id!);
+                              });
                             },
                             child: Container(
                               decoration: BoxDecoration(

@@ -6,6 +6,7 @@ import 'package:food_order_app/screens/authendication/pages/signup_page.dart';
 import 'package:food_order_app/screens/authendication/provider/auth_provider.dart';
 import 'package:food_order_app/screens/home/page/home_screen.dart';
 import 'package:food_order_app/screens/home/provider/home_provider.dart';
+import 'package:food_order_app/screens/menu/provider/menu_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -16,6 +17,9 @@ void main() {
       ),
       ChangeNotifierProvider<HomeProvider>(
         create: (_) => HomeProvider(),
+      ),
+      ChangeNotifierProvider<MenuProvider>(
+        create: (_) => MenuProvider(),
       ),
     ],
     child: const MyApp(),

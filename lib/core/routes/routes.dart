@@ -7,6 +7,7 @@ import 'package:food_order_app/screens/menu/pages/menu_list_screen.dart';
 
 class RouteGenerator {
   static MaterialPageRoute generateRoute(RouteSettings routeSettings) {
+    final args = routeSettings.arguments;
     switch (routeSettings.name) {
       case AppRoutes.login:
         return routeName(const LoginPage());
@@ -15,7 +16,11 @@ class RouteGenerator {
       case AppRoutes.home:
         return routeName(const HomeScreen());
       case AppRoutes.menu:
-        return routeName(const MenuListScreen());
+        String hotelId = '';
+        if (args is List<String> && args.isNotEmpty) {
+          hotelId = args[0];
+        }
+        return routeName(MenuListScreen(hotelId: hotelId));
 
       default:
         return routeName(const LoginPage());

@@ -14,6 +14,10 @@ mixin CommonMethods {
     Navigator.pushNamed(context, route);
   }
 
+  moveTowitharg(BuildContext context, String route,String arg) {
+    Navigator.pushNamed(context, route, arguments: [arg]);
+  }
+
   void goAndCloseAll(BuildContext context, String route) {
     Navigator.pushNamedAndRemoveUntil(
       context,
