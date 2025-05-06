@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:food_order_app/core/routes/routes.dart';
 import 'package:food_order_app/core/routes/routes_string.dart';
-import 'package:food_order_app/screens/authendication/pages/login_page.dart';
-import 'package:food_order_app/screens/authendication/pages/signup_page.dart';
 import 'package:food_order_app/screens/authendication/provider/auth_provider.dart';
-import 'package:food_order_app/screens/home/page/home_screen.dart';
 import 'package:food_order_app/screens/home/provider/home_provider.dart';
 import 'package:food_order_app/screens/menu/provider/menu_provider.dart';
 import 'package:provider/provider.dart';

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:food_order_app/core/common/colors.dart';
 import 'package:food_order_app/screens/menu/provider/menu_provider.dart';
 import 'package:provider/provider.dart';
 

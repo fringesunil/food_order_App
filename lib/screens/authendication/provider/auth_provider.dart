@@ -1,11 +1,9 @@
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:food_order_app/core/common/enum.dart';
 import 'package:food_order_app/core/common/validators.dart';
 import 'package:food_order_app/core/routes/routes_string.dart';
 import 'package:food_order_app/screens/authendication/model/login_response_model.dart';
-import 'package:food_order_app/screens/authendication/model/signup_response_model.dart';
 import 'package:food_order_app/screens/authendication/repository/auth_repository.dart';
 
 class AuthProvider extends AuthRepository with ChangeNotifier {

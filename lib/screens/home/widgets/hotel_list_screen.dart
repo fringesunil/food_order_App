@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:food_order_app/core/common/common_methods.dart';
 import 'package:food_order_app/core/routes/routes_string.dart';
