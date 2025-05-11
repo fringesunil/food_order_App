@@ -14,6 +14,7 @@ class SignupPage extends StatefulWidget {
 
 class _SignupPageState extends State<SignupPage> with CommonMethods {
   final GlobalKey<FormState> signUpKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -42,6 +43,22 @@ class _SignupPageState extends State<SignupPage> with CommonMethods {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: CircleAvatar(
+                            radius: size.width * 0.15,
+                            backgroundColor: Colors.transparent,
+                            child: ClipOval(
+                              child: Image.asset(
+                                'assets/logo.png',
+                                fit: BoxFit.contain,
+                                width: size.width * 0.25,
+                                height: size.width * 0.25,
+                              ),
+                            ),
+                          ),
+                        ),
+
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 10),
@@ -212,7 +229,8 @@ class _SignupPageState extends State<SignupPage> with CommonMethods {
                                     }),
                             ],
                           ),
-                        )
+                        ),
+                        SizedBox(height: size.height * 0.03), // Bottom padding
                       ],
                     ),
                   ),

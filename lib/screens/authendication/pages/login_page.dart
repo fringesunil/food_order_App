@@ -42,6 +42,19 @@ class _LoginPageState extends State<LoginPage> with CommonMethods {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      CircleAvatar(
+                        radius: size.width * 0.15,
+                        backgroundColor: Colors.transparent,
+                        child: ClipOval(
+                          child: Image.asset(
+                            'assets/logo.png',
+                            fit: BoxFit.fill,
+                            width: size.width * 0.25,
+                            height: size.width * 0.25,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: size.height * 0.03),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
@@ -63,8 +76,7 @@ class _LoginPageState extends State<LoginPage> with CommonMethods {
                           ),
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          autofocus:
-                              false, // Ensure autofocus is disabled if not needed
+                          autofocus: false,
                         ),
                       ),
                       SizedBox(height: size.height * 0.03),
@@ -88,8 +100,7 @@ class _LoginPageState extends State<LoginPage> with CommonMethods {
                             ),
                           ),
                           textInputAction: TextInputAction.done,
-                          autofocus:
-                              false, // Ensure autofocus is disabled if not needed
+                          autofocus: false,
                         ),
                       ),
                       SizedBox(height: size.height * 0.04),

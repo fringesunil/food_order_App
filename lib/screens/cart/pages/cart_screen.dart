@@ -36,7 +36,7 @@ class _CartScreenState extends State<CartScreen> with CommonMethods {
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
     var cartpro = Provider.of<CartProvider>(context, listen: false);
     var orderpro = Provider.of<OrderProvider>(context, listen: false);
-   
+
     if (response.paymentId!.isNotEmpty) {
       print(
           "Total Amount==============>${cartpro.cartlist!.first.totalAmount}");
