@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:food_order_app/core/common/common_string.dart';
 import 'package:food_order_app/screens/cart/pages/cart_screen.dart';
 import 'package:food_order_app/screens/home/provider/home_provider.dart';
 import 'package:food_order_app/screens/home/widgets/hotel_list_screen.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         title: Text(
-          'Hi, username',
+          'Hi, ${sharedPreferences!.getString('username')}',
           style: TextStyle(color: Colors.white70, fontSize: 18),
         ),
         actions: [],

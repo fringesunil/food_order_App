@@ -26,17 +26,16 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                 .toList();
 
         return Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Search Bar
             Padding(
-              padding: EdgeInsets.only(top: size.height * 0.02),
+              padding:
+                  EdgeInsets.only(top: size.height * 0.01, left: 16, right: 16),
               child: Container(
                 height: size.height * 0.06,
-                width: size.width * 0.90,
                 decoration: BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: Colors.amber),
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: TextFormField(
                   controller: home.searchController,
@@ -47,29 +46,26 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                   },
                   decoration: InputDecoration(
                     hintText: "Search for Hotel",
-                    hintStyle: const TextStyle(color: Colors.white),
+                    hintStyle: TextStyle(color: Colors.grey[600]),
                     prefixIcon: const Icon(Icons.search, color: Colors.amber),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.only(left: size.width * 0.03),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 ),
               ),
             ),
-            SizedBox(height: size.height * 0.02),
+
+            SizedBox(
+              height: size.height * 0.02,
+            ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: filteredHotels == null || filteredHotels.isEmpty
                     ? const Center(child: Text("No hotels found"))
-                    : GridView.builder(
+                    : ListView.builder(
                         itemCount: filteredHotels.length,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                          childAspectRatio: 0.7,
-                        ),
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
@@ -80,42 +76,57 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
                                     filteredHotels[index].id!);
                               });
                             },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.amber.withOpacity(0.8),
-                                borderRadius: BorderRadius.circular(15),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.orange.withOpacity(0.3),
-                                    spreadRadius: 2,
-                                    blurRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: Row(
                                 children: [
-                                  Expanded(
-                                    child: ClipRRect(
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(15),
-                                      ),
-                                      child: Image.network(
-                                        '${filteredHotels[index].image}',
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                      ),
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      '${filteredHotels[index].image}',
+                                      width: size.width * 0.3,
+                                      height: size.width * 0.3,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '${filteredHotels[index].name}',
-                                      style: const TextStyle(
-                                        color: Colors.black87,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${filteredHotels[index].name}',
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            _buildStatIcon(
+                                                Icons.access_time, "30 min"),
+                                            SizedBox(width: 16),
+                                            _buildStatIcon(Icons.star, "4.5"),
+                                          ],
+                                        ),
+                                        SizedBox(height: 8),
+                                        Row(
+                                          children: [
+                                            IconButton(
+                                              icon: Icon(Icons.favorite_border,
+                                                  color: Colors.grey),
+                                              onPressed: () {},
+                                            ),
+                                            IconButton(
+                                              icon: Icon(Icons.share,
+                                                  color: Colors.grey),
+                                              onPressed: () {},
+                                            ),
+                                          ],
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -129,6 +140,16 @@ class _HotelListScreenState extends State<HotelListScreen> with CommonMethods {
           ],
         );
       }),
+    );
+  }
+
+  Widget _buildStatIcon(IconData icon, String label) {
+    return Row(
+      children: [
+        Icon(icon, size: 16, color: Colors.grey),
+        SizedBox(width: 4),
+        Text(label, style: TextStyle(color: Colors.grey)),
+      ],
     );
   }
 }

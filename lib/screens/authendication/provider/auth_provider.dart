@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:food_order_app/core/common/common_string.dart';
 import 'package:food_order_app/core/common/enum.dart';
 import 'package:food_order_app/core/common/validators.dart';
 import 'package:food_order_app/core/routes/routes_string.dart';
@@ -22,6 +22,9 @@ class AuthProvider extends AuthRepository with ChangeNotifier {
     };
     loginResponse = await loginAPI(context, body);
     if (loginResponse!.status!) {
+      await sharedPreferences!.setString("userid", loginResponse!.data!.id!);
+      await sharedPreferences!
+          .setString("username", loginResponse!.data!.name!);
       goAndCloseAll(context, AppRoutes.home);
       flushAlert(context, ResponseType.success, "Login Successfully");
       clear();

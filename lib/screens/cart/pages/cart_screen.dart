@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:food_order_app/core/common/common_methods.dart';
+import 'package:food_order_app/screens/cart/provider/cart_provider.dart';
+import 'package:food_order_app/screens/order/provider/order_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 class CartScreen extends StatefulWidget {
@@ -8,13 +12,15 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen> {
+class _CartScreenState extends State<CartScreen> with CommonMethods {
   late Razorpay _razorpay;
 
   @override
   void initState() {
     super.initState();
-    // Initialize Razorpay
+    var cartpro = Provider.of<CartProvider>(context, listen: false);
+    cartpro.fetchcart(context);
+
     _razorpay = Razorpay();
     _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
     _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
@@ -23,19 +29,63 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   void dispose() {
-    _razorpay.clear(); // Clear Razorpay instance
+    _razorpay.clear();
     super.dispose();
   }
 
-  void _openCheckout() {
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    var cartpro = Provider.of<CartProvider>(context, listen: false);
+    var orderpro = Provider.of<OrderProvider>(context, listen: false);
+   
+    if (response.paymentId!.isNotEmpty) {
+      print(
+          "Total Amount==============>${cartpro.cartlist!.first.totalAmount}");
+      print("GST Amount==============>${cartpro.cartlist!.first.gstAmount}");
+      print("DIS Amount==============>${cartpro.cartlist!.first.discount}");
+      cartpro.cartlist!.first.cartItems!.forEach((e) {
+        print("CART ITEMS-Name============>${e.menuId!.name}");
+        print("CART ITEMS-ID============>${e.menuId!.id}");
+        print("CART ITEMS-QTY============>${e.quantity}");
+        cartpro.cartItemsList.add({
+          "menu_id": e.menuId!.id,
+          "quantity": e.quantity,
+        });
+        orderpro.addOrder(
+            context,
+            cartpro.cartlist!.first.totalAmount!,
+            cartpro.cartlist!.first.discount!,
+            cartpro.cartlist!.first.gstAmount!,
+            cartpro.cartItemsList,
+            cartpro.cartlist!.first.id!);
+      });
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Payment Successful: ${response.paymentId}")),
+    );
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Payment Failed: ${response.message}")),
+    );
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("External Wallet: ${response.walletName}")),
+    );
+  }
+
+  void _openCheckout(double amount) {
     var options = {
       'key': 'rzp_test_eKhFJmDgLky7dl',
-      'amount': 100,
+      'amount': (amount * 100).toInt(),
       'name': 'Fringe Creations',
-      'description': 'Food paymment',
-      'retry': {'enabled': true, 'max_count': 1},
-      'send_sms_hash': true,
-      'prefill': {'contact': '8888888888', 'email': 'test@razorpay.com'},
+      'description': 'Payment for cart items',
+      'prefill': {
+        'contact': '1234567890',
+        'email': 'user@example.com',
+      },
       'external': {
         'wallets': ['paytm']
       }
@@ -45,27 +95,9 @@ class _CartScreenState extends State<CartScreen> {
       _razorpay.open(options);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error initiating payment: $e')),
+        SnackBar(content: Text("Error: $e")),
       );
     }
-  }
-
-  void _handlePaymentSuccess(PaymentSuccessResponse response) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment Successful! ID: ${response.paymentId}')),
-    );
-  }
-
-  void _handlePaymentError(PaymentFailureResponse response) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Payment Failed: ${response.message}')),
-    );
-  }
-
-  void _handleExternalWallet(ExternalWalletResponse response) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('External Wallet: ${response.walletName}')),
-    );
   }
 
   @override
@@ -74,99 +106,96 @@ class _CartScreenState extends State<CartScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text(
-          'Your Cart',
-          style: TextStyle(
-            color: Colors.black87,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        leading: const Icon(Icons.arrow_back, color: Colors.black87),
-      ),
-      body: Column(
-        children: [
-          // Cart Items List
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                _buildCartItem(
-                  size,
-                  'Veg Burger',
-                  150.00,
-                  'https://example.com/burger.jpg',
-                  2,
-                ),
-                _buildCartItem(
-                  size,
-                  'Margherita Pizza',
-                  300.00,
-                  'https://example.com/pizza.jpg',
-                  1,
-                ),
-              ],
-            ),
-          ),
-          // Bill Summary
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 2,
-                  blurRadius: 5,
-                  offset: const Offset(0, -2),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Bill Details',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                _buildBillRow('Subtotal', 450.00),
-                _buildBillRow('GST (5%)', 22.50),
-                const Divider(height: 20),
-                _buildBillRow('Total', 472.50, isTotal: true),
-                const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _openCheckout,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text(
-                      'Proceed to Checkout',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+      body: Consumer<CartProvider>(builder: (context, cart, child) {
+        return cart.cartlist!.isEmpty
+            ? const Center(
+                child: Text("No data found"),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.all(16.0),
+                      itemCount: cart.cartlist!.first.cartItems!.length,
+                      itemBuilder: (context, index) {
+                        return _buildCartItem(
+                          size,
+                          cart.cartlist![0].cartItems![index].menuId!.name!,
+                          cart.cartlist![0].cartItems![index].menuId!.price!
+                              .toDouble(),
+                          cart.cartlist![0].cartItems![index].menuId!.image!,
+                          cart.cartlist![0].cartItems![index].quantity!,
+                        );
+                      },
                     ),
                   ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          spreadRadius: 2,
+                          blurRadius: 5,
+                          offset: const Offset(0, -2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Bill Details',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        _buildBillRow('Subtotal',
+                            cart.cartlist![0].totalAmount!.toDouble()),
+                        _buildBillRow(
+                            'GST ', cart.cartlist![0].gstAmount!.toDouble()),
+                        const Divider(height: 20),
+                        _buildBillRow(
+                            'Total',
+                            (cart.cartlist![0].totalAmount!.toDouble() +
+                                cart.cartlist![0].gstAmount!.toDouble()),
+                            isTotal: true),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {
+                              final totalAmount =
+                                  cart.cartlist![0].totalAmount!.toDouble() +
+                                      cart.cartlist![0].gstAmount!.toDouble();
+                              _openCheckout(totalAmount);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            child: const Text(
+                              'Proceed to Checkout',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+      }),
     );
   }
 
@@ -190,7 +219,7 @@ class _CartScreenState extends State<CartScreen> {
                 width: size.width * 0.2,
                 height: size.width * 0.2,
                 color: Colors.grey[300],
-                child: const Icon(Icons.image_not_supported),
+                child: Image.network(imageUrl),
               ),
             ),
             const SizedBox(width: 12),
